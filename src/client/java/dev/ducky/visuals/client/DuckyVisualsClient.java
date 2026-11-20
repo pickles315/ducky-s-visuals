@@ -13,6 +13,6 @@ public final class DuckyVisualsClient implements ClientModInitializer {
 
     /** Entry point called reflectively by Ducky's MC Utilities when this add-on is installed. */
     public static void openScreen(Screen parent) {
-        net.minecraft.client.Minecraft.getInstance().setScreen(new VisualsScreen(parent));
+        net.minecraft.client.Minecraft.getInstance().gui.setScreen(new VisualsScreen(parent));
     }
 }
