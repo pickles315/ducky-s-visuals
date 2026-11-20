@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public final class VisualsConfig {
     private static final Path FILE = Path.of("config", "ducky-visuals.properties");
-    public static boolean rimLighting = false;
+    public static boolean rimLighting = true;
     public static boolean volumetricShafts = false;
     public static boolean dynamicLighting = true;
     public static boolean foliageLighting = false;
