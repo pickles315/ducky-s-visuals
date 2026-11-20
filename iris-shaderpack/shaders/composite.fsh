@@ -23,7 +23,8 @@ void main() {
     float depth = texture(depthtex0, texcoord).r;
 
     vec3 normal = decodeNormal(surface.rgb);
-    float materialClass = surface.a * 3.0;
+    float materialClass = surface.a * 4.0 - 1.0;
+    float terrainMask = step(0.1, surface.a);
 
     vec3 normalX = decodeNormal(texture(colortex1, texcoord + vec2(pixel.x * DUCKY_RIM_THICKNESS, 0.0)).rgb);
     vec3 normalY = decodeNormal(texture(colortex1, texcoord + vec2(0.0, pixel.y * DUCKY_RIM_THICKNESS)).rgb);
@@ -37,7 +38,7 @@ void main() {
 
     float foliageBoost = 1.0 + step(0.65, materialClass) * 0.12;
     vec3 rimTint = vec3(0.52, 0.72, 1.0);
-    vec3 rim = rimTint * edge * DUCKY_RIM_STRENGTH * foliageBoost * step(0.00001, depth);
+    vec3 rim = rimTint * edge * DUCKY_RIM_STRENGTH * foliageBoost * terrainMask * (1.0 - step(0.99999, depth));
 
     // Subtle screen-space sun glow approximation; this is not shadow-map volumetrics.
     vec2 lightOrigin = vec2(0.5, 0.82);
@@ -47,7 +48,7 @@ void main() {
         float t = float(i) / 8.0;
         vec2 sampleUv = texcoord - delta * t * 0.82;
         float sampleDepth = texture(depthtex0, sampleUv).r;
-        radial += step(0.00001, sampleDepth) * (1.0 - t) * 0.125;
+        radial += step(0.999, sampleDepth) * (1.0 - t) * 0.125;
     }
     float shaftMask = smoothstep(0.15, 0.95, radial);
     vec3 shafts = vec3(1.0, 0.88, 0.68) * shaftMask * DUCKY_SHAFT_STRENGTH;
