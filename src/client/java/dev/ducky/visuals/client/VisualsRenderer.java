@@ -9,7 +9,7 @@ import org.ladysnake.satin.api.managed.ShaderEffectManager;
 /** Applies depth-aware post-processing after the world has rendered. */
 public final class VisualsRenderer {
     private static final ManagedShaderEffect EFFECT = ShaderEffectManager.getInstance()
-            .manage(Identifier.of("ducky_visuals", "visuals"));
+            .manage(Identifier.fromNamespaceAndPath("ducky_visuals", "visuals"));
     private static boolean registered;
 
     private VisualsRenderer() {}
