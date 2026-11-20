@@ -32,13 +32,20 @@ jobs:
           gradle-version: 9.8.0
       - name: Build and publish Satin to the runner Maven cache
         run: gradle -p Satin-26.2 publishToMavenLocal
-      - name: Build versioned JAR
+      - name: Build versioned Fabric mod
         run: gradle -Pmod_version="$MOD_VERSION" build
-      - name: Upload build artifact
+      - name: Package Iris shader pack
+        run: |
+          mkdir -p build/libs
+          cd iris-shaderpack
+          zip -r "../libs/ducky-s-visuals-iris-26.2.zip" shaders README.md pack.mcmeta
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: ducky-s-visuals-fabric-26.2-${{ env.MOD_VERSION }}
-          path: build/libs/*.jar
+          name: ducky-s-visuals-26.2-${{ env.MOD_VERSION }}
+          path: |
+            build/libs/*.jar
+            build/libs/ducky-s-visuals-iris-26.2.zip
           if-no-files-found: error
       - name: Publish GitHub prerelease
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -47,8 +54,10 @@ jobs:
           tag_name: v${{ env.MOD_VERSION }}
           name: Ducky's Visuals v${{ env.MOD_VERSION }}
           body: |
-            Automated Fabric build for Minecraft 26.2.
-            Requires Ducky's MC Utilities.
-          files: build/libs/*.jar
+            Automated Minecraft 26.2 builds.
+            Includes the legacy Fabric mod JAR and the native Iris shader-pack ZIP.
+          files: |
+            build/libs/*.jar
+            build/libs/ducky-s-visuals-iris-26.2.zip
           prerelease: true
           generate_release_notes: true
