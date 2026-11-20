@@ -9,6 +9,7 @@ public final class DuckyVisualsClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         VisualsConfig.load();
+        VisualsRenderer.initialize();
     }
 
     /** Entry point called reflectively by Ducky's MC Utilities when this add-on is installed. */
