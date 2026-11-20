@@ -1,0 +1,23 @@
+{
+  "targets": {},
+  "passes": [{
+    "vertex_shader": "minecraft:core/screenquad",
+    "fragment_shader": "ducky_visuals:post/visuals",
+    "inputs": [
+      { "sampler_name": "In", "target": "minecraft:main" },
+      { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
+    ],
+    "output": "minecraft:main",
+    "uniforms": {
+      "VisualsConfig": [
+        { "name": "RimEnabled", "type": "float", "value": 0.0 },
+        { "name": "RimStrength", "type": "float", "value": 0.65 },
+        { "name": "RimThickness", "type": "float", "value": 2.75 },
+        { "name": "ShaftsEnabled", "type": "float", "value": 0.0 },
+        { "name": "ShaftIntensity", "type": "float", "value": 0.5 },
+        { "name": "FoliageResponse", "type": "float", "value": 0.0 },
+        { "name": "DynamicResponse", "type": "float", "value": 1.0 }
+      ]
+    }
+  }]
+}
