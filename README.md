@@ -4,17 +4,22 @@ A client-side visual add-on for **Ducky's MC Utilities** for Minecraft 26.2 (Fab
 
 ## Active effects
 
-- **Depth-based rim lighting:** samples Minecraft's scene depth and adds a configurable colored edge highlight around visible geometry.
-- **Screen-space light shafts:** gathers bright, unobstructed sky samples toward an upper-sky light source to create a radial light-shaft effect.
+- **Depth-based rim lighting:** uses a depth-derived surface-normal buffer and visible-geometry coverage buffer to shape the edge response.
+- **Screen-space light shafts:** gathers bright samples toward an upper-sky light source and uses the geometry coverage buffer to reject blocked samples.
 - **Scene-adaptive response:** adjusts rim intensity using scene luminance.
-- **Foliage response:** uses a screen-color heuristic to adjust the rim response in green-dominant areas.
+- **Foliage and water response:** uses a screen-color material estimate to adjust rim tint and response.
 - Settings are saved in `config/ducky-visuals.properties`.
 
-The post effect is registered through Satin's Minecraft 26.2 shader-effect API and runs after world rendering. It samples the main color and copied depth buffer, and uses a ping-pong render target so it does not read and write the same target in one pass.
+## Screen-space data buffers
 
-## Important rendering scope
+The post effect builds two intermediate GPU targets before compositing:
 
-The screen-space shafts are a lightweight approximation. They do **not** use the supplied shadow-map aperture shader, a generated terrain-only mask, or a true volumetric light-space integration pass. Likewise, rim lighting currently detects depth discontinuities across visible geometry rather than using a terrain-only mask. The supplied terrain-mask and shadow-aperture GLSL files remain included as source for a later full shadow/terrain pipeline implementation.
+- **Surface data:** RGB stores a normal reconstructed from neighboring depth samples; alpha stores a coarse screen-color material estimate (foliage-like, water-like, bright, or other).
+- **Geometry coverage:** stores whether a pixel has visible depth rather than sky/far-plane depth.
+
+These are real intermediate screen-space textures consumed by the final effect. They are not a terrain-only mask or a true block/material ID buffer: entities are included in visible geometry, and material labels are visual estimates rather than block registry IDs. A terrain-only mask and exact per-block material IDs require a separate terrain draw pipeline.
+
+The screen-space shafts remain a lightweight approximation. They do **not** use shadow-map aperture data or true light-space volumetric integration.
 
 Minecraft 26.2 supports both OpenGL and Vulkan, so this implementation uses the renderer abstraction via Satin rather than raw OpenGL calls.
 
