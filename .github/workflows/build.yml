@@ -34,6 +34,12 @@ jobs:
         run: gradle -p Satin-26.2 publishToMavenLocal
       - name: Build versioned Fabric mod
         run: gradle -Pmod_version="$MOD_VERSION" build
+      - name: Validate Iris GLSL shaders
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y glslang-tools
+          glslangValidator -l iris-shaderpack/shaders/gbuffers_terrain.vsh iris-shaderpack/shaders/gbuffers_terrain.fsh
+          glslangValidator -l iris-shaderpack/shaders/composite.vsh iris-shaderpack/shaders/composite.fsh
       - name: Package Iris shader pack
         run: |
           mkdir -p build/libs
