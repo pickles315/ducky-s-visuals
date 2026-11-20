@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "ducky_visuals",
+  "version": "${version}",
+  "name": "Ducky's Visuals",
+  "description": "Configurable visual enhancements for Ducky's MC Utilities.",
+  "authors": ["pickles315"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": { "client": ["dev.ducky.visuals.client.DuckyVisualsClient"] },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "ducky_utilities": "*"
+  }
+}
