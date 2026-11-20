@@ -1,23 +1,36 @@
 {
-  "targets": {},
-  "passes": [{
-    "vertex_shader": "minecraft:core/screenquad",
-    "fragment_shader": "ducky_visuals:post/visuals",
-    "inputs": [
-      { "sampler_name": "In", "target": "minecraft:main" },
-      { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
-    ],
-    "output": "minecraft:main",
-    "uniforms": {
-      "VisualsConfig": [
-        { "name": "RimEnabled", "type": "float", "value": 0.0 },
-        { "name": "RimStrength", "type": "float", "value": 0.65 },
-        { "name": "RimThickness", "type": "float", "value": 2.75 },
-        { "name": "ShaftsEnabled", "type": "float", "value": 0.0 },
-        { "name": "ShaftIntensity", "type": "float", "value": 0.5 },
-        { "name": "FoliageResponse", "type": "float", "value": 0.0 },
-        { "name": "DynamicResponse", "type": "float", "value": 1.0 }
-      ]
+  "targets": { "visuals_swap": {} },
+  "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "ducky_visuals:post/visuals",
+      "inputs": [
+        { "sampler_name": "In", "target": "minecraft:main" },
+        { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
+      ],
+      "output": "visuals_swap",
+      "uniforms": {
+        "VisualsConfig": [
+          { "name": "RimEnabled", "type": "float", "value": 0.0 },
+          { "name": "RimStrength", "type": "float", "value": 0.65 },
+          { "name": "RimThickness", "type": "float", "value": 2.75 },
+          { "name": "ShaftsEnabled", "type": "float", "value": 0.0 },
+          { "name": "ShaftIntensity", "type": "float", "value": 0.5 },
+          { "name": "FoliageResponse", "type": "float", "value": 0.0 },
+          { "name": "DynamicResponse", "type": "float", "value": 1.0 }
+        ]
+      }
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/blit",
+      "inputs": [{ "sampler_name": "In", "target": "visuals_swap" }],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BlitConfig": [
+          { "name": "ColorModulate", "type": "vec4", "value": [1.0, 1.0, 1.0, 1.0] }
+        ]
+      }
     }
-  }]
+  ]
 }
