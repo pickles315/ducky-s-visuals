@@ -16,6 +16,12 @@ jobs:
       MOD_VERSION: 1.${{ github.run_number }}
     steps:
       - uses: actions/checkout@v6
+      - name: Checkout Satin 26.2 source
+        uses: actions/checkout@v6
+        with:
+          repository: GzSakura1338/Satin-26.2
+          ref: main
+          path: Satin-26.2
       - name: Set up Java 25
         uses: actions/setup-java@v5
         with:
@@ -24,6 +30,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: 9.8.0
+      - name: Build and publish Satin to the runner Maven cache
+        run: gradle -p Satin-26.2 publishToMavenLocal
       - name: Build versioned JAR
         run: gradle -Pmod_version="$MOD_VERSION" build
       - name: Upload build artifact
