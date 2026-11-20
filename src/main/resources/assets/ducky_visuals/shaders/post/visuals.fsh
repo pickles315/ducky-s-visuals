@@ -11,6 +11,7 @@ layout(std140) uniform VisualsConfig {
     float ShaftIntensity;
     float FoliageResponse;
     float DynamicResponse;
+    float NormalResponse;
 };
 
 in vec2 texCoord;
@@ -19,12 +20,42 @@ out vec4 fragColor;
 float saturate(float x) { return clamp(x, 0.0, 1.0); }
 float luminance(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
 
+// Minecraft 26.2 uses reversed Z: 1 is near and 0 is the far plane.
+float linearDepth(float depth) {
+    const float nearPlane = 0.05;
+    const float farPlane = 4096.0;
+    float conventionalDepth = 1.0 - depth;
+    return (nearPlane * farPlane) /
+           max(nearPlane + conventionalDepth * (farPlane - nearPlane), 1e-5);
+}
+
+// Reconstruct a view-space surface normal from the depth neighborhood.
+// This is a screen-space normal field; it does not require a second geometry pass.
+vec3 screenSpaceNormal(vec2 uv, vec2 texel, float centerDepth) {
+    float z = linearDepth(centerDepth);
+    float zL = linearDepth(texture(DepthSampler, uv - vec2(texel.x, 0.0)).r);
+    float zR = linearDepth(texture(DepthSampler, uv + vec2(texel.x, 0.0)).r);
+    float zD = linearDepth(texture(DepthSampler, uv - vec2(0.0, texel.y)).r);
+    float zU = linearDepth(texture(DepthSampler, uv + vec2(0.0, texel.y)).r);
+
+    vec3 dpdx = vec3(2.0 * texel.x * z, 0.0, zR - zL);
+    vec3 dpdy = vec3(0.0, 2.0 * texel.y * z, zU - zD);
+    vec3 n = cross(dpdx, dpdy);
+    float n2 = dot(n, n);
+    return n2 > 1e-12 ? normalize(n) : vec3(0.0, 0.0, 1.0);
+}
+
 void main() {
     vec3 scene = texture(InSampler, texCoord).rgb;
     vec2 texel = 1.0 / vec2(textureSize(InSampler, 0));
     float depth = texture(DepthSampler, texCoord).r;
-    // 26.2 uses reversed Z: zero is the far plane/sky and one is the near plane.
+    // Reversed-Z sky/far pixels are near zero.
     float opaque = smoothstep(0.0005, 0.025, depth);
+
+    vec3 normal = screenSpaceNormal(texCoord, texel, depth);
+    // Fixed view-space key light is only a directional response term, not a
+    // replacement for Minecraft's actual block-light or shadow data.
+    float normalLight = 0.58 + 0.42 * max(dot(normal, normalize(vec3(-0.35, 0.65, 0.68))), 0.0);
 
     if (RimEnabled > 0.5 && opaque > 0.01) {
         vec2 d = texel * max(RimThickness, 1.0);
@@ -45,11 +76,11 @@ void main() {
         float sceneResponse = mix(1.0, 0.65 + luminance(scene) * 0.7, DynamicResponse);
         vec3 rimTint = mix(vec3(0.42, 0.58, 1.0), vec3(1.0, 0.78, 0.48),
                            saturate(1.0 - luminance(scene)));
-        scene += rimTint * edge * RimStrength * foliageMix * sceneResponse;
+        float normalResponse = mix(1.0, normalLight, saturate(NormalResponse));
+        scene += rimTint * edge * RimStrength * foliageMix * sceneResponse * normalResponse;
     }
 
-    // Depth-aware screen-space light shafts. This samples bright sky toward
-    // an upper-sky light source; it does not claim to read Minecraft's shadow map.
+    // Depth-aware screen-space light shafts; these are not shadow-map volumetrics.
     if (ShaftsEnabled > 0.5) {
         const vec2 lightUv = vec2(0.5, 0.12);
         vec2 delta = (texCoord - lightUv) / 12.0;
