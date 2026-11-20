@@ -1,12 +1,35 @@
 {
-  "targets": { "visuals_swap": {} },
+  "targets": {
+    "surface_data": {},
+    "geometry_mask": {},
+    "visuals_swap": {}
+  },
   "passes": [
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "ducky_visuals:post/surface_data",
+      "inputs": [
+        { "sampler_name": "In", "target": "minecraft:main" },
+        { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
+      ],
+      "output": "surface_data"
+    },
+    {
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "ducky_visuals:post/geometry_mask",
+      "inputs": [
+        { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
+      ],
+      "output": "geometry_mask"
+    },
     {
       "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "ducky_visuals:post/visuals",
       "inputs": [
         { "sampler_name": "In", "target": "minecraft:main" },
-        { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true }
+        { "sampler_name": "Depth", "target": "minecraft:main", "use_depth_buffer": true },
+        { "sampler_name": "SurfaceData", "target": "surface_data" },
+        { "sampler_name": "GeometryMask", "target": "geometry_mask" }
       ],
       "output": "visuals_swap",
       "uniforms": {
@@ -17,7 +40,8 @@
           { "name": "ShaftsEnabled", "type": "float", "value": 0.0 },
           { "name": "ShaftIntensity", "type": "float", "value": 0.5 },
           { "name": "FoliageResponse", "type": "float", "value": 0.0 },
-          { "name": "DynamicResponse", "type": "float", "value": 1.0 }
+          { "name": "DynamicResponse", "type": "float", "value": 1.0 },
+          { "name": "NormalResponse", "type": "float", "value": 1.0 }
         ]
       }
     },
