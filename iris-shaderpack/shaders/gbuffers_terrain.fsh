@@ -31,5 +31,6 @@ void main() {
     else if (blueDominance > 0.10) materialClass = 2.0;
     else if (brightness > 0.82) materialClass = 3.0;
 
-    surfaceData = vec4(n * 0.5 + 0.5, materialClass / 3.0);
+    // Alpha reserves zero for pixels that were not written by the terrain pass.
+    surfaceData = vec4(n * 0.5 + 0.5, (materialClass + 1.0) / 4.0);
 }
