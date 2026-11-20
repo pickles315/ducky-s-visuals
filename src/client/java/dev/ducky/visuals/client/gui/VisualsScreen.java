@@ -20,7 +20,7 @@ public final class VisualsScreen extends Screen {
         int gap = 9;
         addRenderableWidget(toggle("Rim lighting", () -> VisualsConfig.rimLighting, v -> VisualsConfig.rimLighting = v, x, top, buttonWidth, h));
         addRenderableWidget(toggle("Volumetric light shafts", () -> VisualsConfig.volumetricShafts, v -> VisualsConfig.volumetricShafts = v, x, top + (h + gap), buttonWidth, h));
-        addRenderableWidget(toggle("Dynamic day / night lighting", () -> VisualsConfig.dynamicLighting, v -> VisualsConfig.dynamicLighting = v, x, top + 2 * (h + gap), buttonWidth, h));
+        addRenderableWidget(toggle("Scene-adaptive lighting", () -> VisualsConfig.dynamicLighting, v -> VisualsConfig.dynamicLighting = v, x, top + 2 * (h + gap), buttonWidth, h));
         addRenderableWidget(toggle("Foliage-aware lighting", () -> VisualsConfig.foliageLighting, v -> VisualsConfig.foliageLighting = v, x, top + 3 * (h + gap), buttonWidth, h));
         addRenderableWidget(Button.builder(Component.literal("Rim strength: " + percent(VisualsConfig.rimStrength)), b -> {
             VisualsConfig.rimStrength = step(VisualsConfig.rimStrength); b.setMessage(Component.literal("Rim strength: " + percent(VisualsConfig.rimStrength))); VisualsConfig.save();
