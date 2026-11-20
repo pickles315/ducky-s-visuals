@@ -16,10 +16,16 @@ loom {
     }
 }
 
+repositories {
+    maven { url = "https://jitpack.io" }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    modImplementation "com.github.GzSakura1338:Satin-26.2:main-SNAPSHOT"
+    include "com.github.GzSakura1338:Satin-26.2:main-SNAPSHOT"
 }
 
 processResources {
