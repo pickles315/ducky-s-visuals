@@ -26,6 +26,7 @@ public final class VisualsRenderer {
             EFFECT.setUniformValue("ShaftIntensity", (float) VisualsConfig.shaftIntensity);
             EFFECT.setUniformValue("FoliageResponse", VisualsConfig.foliageLighting ? 1.0f : 0.0f);
             EFFECT.setUniformValue("DynamicResponse", VisualsConfig.dynamicLighting ? 1.0f : 0.0f);
+            EFFECT.setUniformValue("NormalResponse", 1.0f);
             EFFECT.render(tickDelta);
         });
     }
